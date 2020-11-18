@@ -1,8 +1,11 @@
-import {reqseckList} from "../../utils/http"
+import {reqseckList,reqseckCount} from "../../utils/http"
 const state = {
     //分类list
     list:[],
-    
+    //总数
+    total:0,
+    size:2,
+    page:1,
 }
 
 const mutations = {
@@ -10,6 +13,12 @@ const mutations = {
     changeList(state,arr){
         state.list=arr;
         console.log(state.list);
+    },
+    changeTotal(state,num){
+        state.total=num;
+    },
+    changePage(state,page){
+        state.page=page;
     }
 }
 
@@ -29,7 +38,19 @@ const actions = {
             context.commit("changeList",list)
         })
     },
-   
+    //请总数
+    // reqCount(context){
+    //     reqseckCount().then(res=>{
+    //         context.commit("changeTotal",res.data.list[0].total)
+    //     })
+    // },
+    // //修改页码
+    // changePage(context,page){
+    //     //修改页码
+    //     context.commit("changePage",page)
+    //     //从新请求数据
+    //     context.dispatch("reqList")
+    // }
 }
 
 const getters = {

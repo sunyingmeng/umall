@@ -135,13 +135,16 @@ export default {
         img: null,
         description: "",
         specsid: "",
-        specsattr: [], 
+        specsattr: [], //此时是数组，后端要的是 "[]"
         isnew: 1,
         ishot: 1,
         status: 1
       },
+      //二级分类的list
       secondCateList: [],
+      //图片临时地址
       imgUrl: "",
+      //规格属性list
       attrsList: []
     };
   },
@@ -155,16 +158,22 @@ export default {
   },
   methods: {
     ...mapActions({
+      // 4.请求一级分类list
       reqCateList: "cate/reqList",
+      //8.请求规格list
       reqSpecsList: "specs/reqList",
+      //商品list和总数
       reqGoodsList: "goods/reqList",
       reqGoodsCount: "goods/reqCount"
     }),
+    // 5.根据一级分类id，得到二级分类list
     changeFirst() {
+      //二级分类的id重置
       this.user.second_cateid = "";
       this.getSecondList();
     },
     getSecondList() {
+      //获取二级分类list
       reqcateList({ pid: this.user.first_cateid }).then(res => {
         this.secondCateList = res.data.list;
       });
@@ -173,16 +182,21 @@ export default {
     // 6.处理图片
     changeFile(e) {
       let file = e.target.files[0];
+      //验证
       this.imgUrl = URL.createObjectURL(file);
       this.user.img = file;
     },
     //12.修改了规格，计算出规格属性的list
     changeSpecsId() {
+      //先将specsattr 置空
       this.user.specsattr = [];
       this.getAttrs();
     },
     getAttrs() {
+      // 取出 specsList ,哪条数据的id和this.user.specsid是一样的
       let obj = this.specsList.find(item => item.id === this.user.specsid);
+
+      //就将这条数据的attrs取出来，赋值给attrsList
       this.attrsList = obj.attrs;
     },
 
@@ -215,8 +229,11 @@ export default {
         ishot: 1,
         status: 1
       };
+      //二级分类的list
       this.secondCateList = [];
+      //图片临时地址
       this.imgUrl = "";
+      //规格属性list
       this.attrsList = [];
     },
 
@@ -269,6 +286,8 @@ export default {
     add() {
 
       this.check().then(() => {
+        //将编辑器的内容取出来给user.description
+        //this.editor.txt.html() 取值
         this.user.description = this.editor.txt.html();
 
         let d = { ...this.user };
@@ -279,6 +298,7 @@ export default {
             successAlert("添加成功");
             this.cancel();
             this.empty();
+            //刷新list
             this.reqGoodsList();
             this.reqGoodsCount();
           }
@@ -290,10 +310,15 @@ export default {
       reqgoodsDetail(id).then(res => {
         this.user = res.data.list;
         this.user.id = id;
+        //请二级list
         this.getSecondList();
+        //图片
         this.imgUrl = this.$imgPre + this.user.img;
+        //属性
         this.user.specsattr = JSON.parse(this.user.specsattr);
+        //计算规格属性的list
         this.getAttrs();
+        //给编辑器赋值
         if (this.editor) {
           this.editor.txt.html(this.user.description);
         }
@@ -328,7 +353,9 @@ export default {
     }
   },
   mounted() {
+    // 5.一进来请求一级分类list
     this.reqCateList();
+    // 9.一进来就请求规格list,参数true，是为了取到所有的规格
     this.reqSpecsList(true);
   }
 };

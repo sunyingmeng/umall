@@ -7,41 +7,44 @@
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
-import vList from "./components/list.vue";
-import vForm from "./components/form.vue";
+import vForm from "./components/form.vue"
+import vList from "./components/list.vue"
 export default {
-  components: {
+  components:{
     vList,
-    vForm,
+    vForm
   },
-  data() {
+  data(){
     return {
-      info: {
-        isshow: false,
-        title: "添加活动",
-      },
-    };
+      info:{
+        isshow:false,
+        title:"添加活动"
+      }
+    }
   },
   computed: {
     ...mapGetters({}),
   },
   methods: {
     ...mapActions({}),
-    willAdd() {
-      this.info = {
-        isshow: true,
-        title: "添加分类",
-      };
+     willAdd(){
+      this.info={
+        isshow:true,
+        title:"添加活动"
+      }
     },
-     edit(id) {
-      this.info = {
-        isshow: true,
-        title: "编辑分类"
-      };
-      this.$refs.form.getOne(id);
+    //编辑
+    edit(id){
+      this.info={
+        isshow:true,
+        title:"编辑活动"
+      }
+      this.$refs.form.getOne(id)
     }
   },
-  mounted() {},
+  mounted() {
+    
+  },
 };
 </script>
 <style scoped>

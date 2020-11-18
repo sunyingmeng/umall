@@ -17,8 +17,8 @@ export default new Vuex.Store({
         cate,
         specs,
         banner,
-        seck,
-        goods
+        goods,
+        seck
 
     }
 })

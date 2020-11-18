@@ -490,12 +490,12 @@ export const reqgoodsAdd = (user) => {
     })
 }
 
-//18.列表 p={page:1,size:10}
-export const reqgoodsList = (p) => {
+
+export const reqgoodsList = (obj) => {
     return axios({
         url: baseUrl + "/api/goodslist",
         method: "get",
-        params: p
+        params:obj
     })
 }
 
