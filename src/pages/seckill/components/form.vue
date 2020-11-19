@@ -163,6 +163,7 @@ export default {
       this.imgUrl = "";
       //规格属性list
       this.attrsList = [];
+      this.value1=[]
     },
 
     //验证
@@ -225,7 +226,6 @@ export default {
     closed() {
       if (this.info.title == "编辑活动") {
         this.empty();
-        this.value1=[]
       }
     },
     //弹框打开，并且动画结束了
