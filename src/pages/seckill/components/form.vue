@@ -90,7 +90,6 @@ export default {
         endtime: "",
         first_cateid: "",
         second_cateid: "",
-        third_cateid: "",
         goodsid: "",
         status: 1,
       },
@@ -181,9 +180,10 @@ export default {
     //添加
     add() {
       this.check().then(() => {
+          this.user.begintime = this.value1[0].getTime();
+          this.user.endtime = this.value1[1].getTime();
+          console.log(this.user);
         reqseckAdd(this.user).then((res) => {
-          this.user.begintime = this.value1[0];
-          this.user.endtime = this.value1[1];
           if (res.data.code === 200) {
             successAlert("添加成功");
             this.cancel();
@@ -202,20 +202,22 @@ export default {
         //请二级list
         this.getSecondList();
         this.getThirdList();
-        this.user.begintime = new Date(this.user.begintime);
-        this.user.endtime = new Date(this.user.endtime);
-        this.value1 = [this.user.begintime, this.user.endtime];
+        this.value1=[new Date(parseInt(this.user.begintime)),new Date(parseInt(this.user.endtime))]
       });
     },
     //更新
     update() {
+         
       this.check().then(() => {
+          this.user.begintime = this.value1[0].getTime();
+          this.user.endtime = this.value1[1].getTime();
         reqseckUpdate(this.user).then((res) => {
           if (res.data.code == 200) {
             successAlert("更新成功");
             this.cancel();
             this.empty();
             this.reqseckList();
+             this.value1=[new Date(parseInt(this.user.begintime)),new Date(parseInt(this.user.endtime))]
           }
         });
       });
@@ -223,6 +225,7 @@ export default {
     closed() {
       if (this.info.title == "编辑活动") {
         this.empty();
+        this.value1=[]
       }
     },
     //弹框打开，并且动画结束了
