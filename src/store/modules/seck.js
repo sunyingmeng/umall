@@ -38,19 +38,7 @@ const actions = {
             context.commit("changeList",list)
         })
     },
-    //请总数
-    // reqCount(context){
-    //     reqseckCount().then(res=>{
-    //         context.commit("changeTotal",res.data.list[0].total)
-    //     })
-    // },
-    // //修改页码
-    // changePage(context,page){
-    //     //修改页码
-    //     context.commit("changePage",page)
-    //     //从新请求数据
-    //     context.dispatch("reqList")
-    // }
+    
 }
 
 const getters = {

@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed">
-      <el-form :model="user">
-        <el-form-item label="规格名称" label-width="120px">
+      <el-form :model="user" :rules="rules">
+        <el-form-item label="规格名称" label-width="120px" prop="specsname">
           <el-input v-model="user.specsname" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="规格属性" label-width="120px" v-for="(item,index) in attrArr" :key="index">
@@ -31,29 +31,34 @@ import {
   reqspecsAdd,
   reqspecsDetail,
   reqspecsUpdate,
-  reqspecsDel
+  reqspecsDel,
 } from "../../../utils/http";
-import { successAlert } from "../../../utils/alert";
+import { successAlert ,errorAlert} from "../../../utils/alert";
 export default {
   props: ["info"],
   data() {
     return {
+      rules: {
+        specsname: [
+          { required: true, message: "请输入菜单名称", trigger: "blur" },
+        ],
+      },
       user: {
         specsname: "",
         attrs: "",
-        status: 1
+        status: 1,
       },
       //属性值
-      attrArr: [{ value: "" }]
+      attrArr: [{ value: "" }],
     };
   },
   computed: {
-    ...mapGetters({})
+    ...mapGetters({}),
   },
   methods: {
     ...mapActions({
-        reqList:"specs/reqList",
-        reqCount:"specs/reqCount",
+      reqList: "specs/reqList",
+      reqCount: "specs/reqCount",
     }),
     cancel() {
       this.info.isshow = false;
@@ -61,7 +66,7 @@ export default {
     //新增规格属性
     addAttr() {
       this.attrArr.push({
-        value: ""
+        value: "",
       });
     },
     //删除规格属性
@@ -73,53 +78,72 @@ export default {
       this.user = {
         specsname: "",
         attrs: "",
-        status: 1
+        status: 1,
       };
       //属性值
       this.attrArr = [{ value: "" }];
     },
+    check() {
+      return new Promise((resolve, reject) => {
+        //验证
+        if (this.user.specsname === "") {
+          errorAlert("规格名称不能为空");
+          return;
+        }
+        resolve();
+      });
+    },
     //添加
     add() {
-      // console.log(this.attrArr);//[{value:"s"},{value:"m"},{value:"l"}]--["s","m","l"]
-      this.user.attrs = JSON.stringify(this.attrArr.map(item => item.value));
-      reqspecsAdd(this.user).then(res => {
-        if (res.data.code === 200) {
-          successAlert("添加成功");
-          this.cancel();
-          this.empty();
-          //刷新list
-          this.reqList()
-          this.reqCount()
-        }
+      this.check().then(() => {
+        this.user.attrs = JSON.stringify(
+          this.attrArr.map((item) => item.value)
+        );
+        reqspecsAdd(this.user).then((res) => {
+          if (res.data.code === 200) {
+            successAlert("添加成功");
+            this.cancel();
+            this.empty();
+            //刷新list
+            this.reqList();
+            this.reqCount();
+          }
+        });
       });
     },
     //详情
-    getOne(id){
-        reqspecsDetail(id).then(res=>{
-            this.user=res.data.list[0]
-            //  '["s","M"]'-->[{value:"s"},{value:"M"}]
-            this.attrArr=JSON.parse(this.user.attrs).map(item=>({value:item}))
-        })
+    getOne(id) {
+      reqspecsDetail(id).then((res) => {
+        this.user = res.data.list[0];
+        //  '["s","M"]'-->[{value:"s"},{value:"M"}]
+        this.attrArr = JSON.parse(this.user.attrs).map((item) => ({
+          value: item,
+        }));
+      });
     },
     //更新
-    update(){
-        this.user.attrs=JSON.stringify(this.attrArr.map(item=>item.value))
-        reqspecsUpdate(this.user).then(res=>{
-            if(res.data.code==200){
-                successAlert("更新成功")
-                this.cancel()
-                this.empty()
-                this.reqList()
-            }
-        })
+    update() {
+      this.check().then(() => {
+        this.user.attrs = JSON.stringify(
+          this.attrArr.map((item) => item.value)
+        );
+        reqspecsUpdate(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("更新成功");
+            this.cancel();
+            this.empty();
+            this.reqList();
+          }
+        });
+      });
     },
-    closed(){
-        if(this.info.title=="编辑规格"){
-            this.empty()
-        }
-    }
+    closed() {
+      if (this.info.title == "编辑规格") {
+        this.empty();
+      }
+    },
   },
-  mounted() {}
+  mounted() {},
 };
 </script>
 <style scoped>

@@ -183,7 +183,7 @@ export default {
       this.check().then(() => {
           this.user.begintime = this.value1[0].getTime();
           this.user.endtime = this.value1[1].getTime();
-          console.log(this.user);
+          // console.log(this.user);
         reqseckAdd(this.user).then((res) => {
           if (res.data.code === 200) {
             successAlert("添加成功");

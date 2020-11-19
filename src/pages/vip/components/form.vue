@@ -3,12 +3,12 @@
     <!-- 4.绑定数据到模板 -->
     <!-- 40 绑定closed -->
     <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed">
-      <el-form :model="user">
-        <el-form-item label="手机号" label-width="120px">
+      <el-form :model="user" :rules="rules">
+        <el-form-item label="手机号" label-width="120px" prop="phone">
           <!-- 9.通过v-model将user绑定到表单上 -->
           <el-input v-model="user.phone" autocomplete="off"></el-input>
         </el-form-item>
-         <el-form-item label="昵称" label-width="120px">
+         <el-form-item label="昵称" label-width="120px" prop="nickname">
           <el-input v-model="user.nickname" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="密码" label-width="120px">
@@ -32,12 +32,20 @@ import {
   reqVipDetail,
   reqVipUpdate
 } from "../../../utils/http";
-import { successAlert } from "../../../utils/alert";
+import { successAlert,errorAlert } from "../../../utils/alert";
 export default {
   // 3.接收info
   props: ["info"],
   data() {
     return {
+      rules: {
+        phone: [
+          { required: true, message: "请输入手机号", trigger: "blur" },
+        ],
+         nickname: [
+          { required: true, message: "请输入昵称", trigger: "blur" },
+        ],
+      },
       //7.初始化user
       user: {
         uid: "",
@@ -69,7 +77,20 @@ export default {
         status: 1
       };
     },
-    
+    check() {
+      return new Promise((resolve, reject) => {
+        //验证
+        if (this.user.phone === "") {
+          errorAlert("手机号不能为空");
+          return;
+        }
+        if (this.user.nickname === "") {
+          errorAlert("昵称不能为空");
+          return;
+        }
+        resolve();
+      });
+    },
     //37 获取详情
     getOne(uid) {
       reqVipDetail(uid).then(res => {
@@ -82,18 +103,19 @@ export default {
     },
     //39 修改
     update() {
-      reqVipUpdate(this.user).then(res => {
+      if (this.user.password) {
+         this.check().then(() => {
+        reqVipUpdate(this.user).then(res => {
         if (res.data.code == 200) {
-          //弹成功
-          successAlert("修改成功");
-          //弹框消失
+          successAlert(res.data.msg);
           this.cancel();
-          //数据清空
           this.empty();
-          //刷新list
           this.$emit("init");
         }
       });
+      });
+      }
+     
     },
     //41.处理消失
     closed() {

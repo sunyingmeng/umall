@@ -1,8 +1,8 @@
 <template>
   <div class="add">
     <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed">
-      <el-form :model="user">
-        <el-form-item label="标题" label-width="120px">
+      <el-form :model="user" :rules="rules">
+        <el-form-item label="标题" label-width="120px" prop="title">
           <el-input v-model="user.title" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="图片" label-width="120px" v-if="user.pid!==0">
@@ -40,12 +40,16 @@ export default {
   props: ["info"],
   data() {
     return {
+      rules: {
+        title: [
+          { required: true, message: "请输入手机号", trigger: "blur" },
+        ]
+      },
       user: {
         title: "",
         img: null,
         status: 1
       },
-      // 2.初始化图片路径
       imgUrl: ""
     };
   },
@@ -104,9 +108,21 @@ export default {
       };
       this.imgUrl = "";
     },
+    check() {
+      return new Promise((resolve, reject) => {
+        //验证
+        if (this.user.title === "") {
+          errorAlert("标题不能为空");
+          return;
+        }
+        
+        resolve();
+      });
+    },
     //10.点了添加按钮
     add() {
-      //16.ajax
+      
+      this.check().then(() => {
       reqbannerAdd(this.user).then(res => {
         if (res.data.code == 200) {
           successAlert("添加成功");
@@ -115,6 +131,7 @@ export default {
           this.reqList();
           
         }
+      });
       });
     },
     //37 获取详情
@@ -127,14 +144,15 @@ export default {
     },
     //39 修改
     update() {
-        console.log(33333);
-      reqbannerUpdate(this.user).then(res => {
+      this.check().then(() => {
+        reqbannerUpdate(this.user).then(res => {
         if (res.data.code == 200) {
           successAlert("修改成功");
           this.cancel();
           this.empty();
           this.reqList();
         }
+      });
       });
     },
     //41.处理消失
